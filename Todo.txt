@@ -1,0 +1,23 @@
+1. Extract and save images:
+You could add functionality to extract all image URLs from the page using a selector like img and save references to them.
+
+2. Extract meta tags:
+Add support for extracting meta information like description, keywords, and other metadata from the page.
+
+3. Add page size and load time metrics:
+Track how long it takes to fetch and process each page, as well as the size of the content.
+
+4. Implement filtering options:
+Allow users to filter the results based on keywords, link patterns, or specific elements.
+
+5. Add crawling capabilities:
+Develop the ability to follow links on the page to crawl through a site to a specified depth.
+
+6. Add more output formats:
+Support formats like CSV or XML for better integration with other tools.
+
+7. Add screenshots:
+Integrate with a tool like Headless Chrome to capture screenshots of pages.
+
+8. Add concurrency:
+Enable scraping multiple pages concurrently for better performance.
