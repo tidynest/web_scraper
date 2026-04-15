@@ -16,6 +16,7 @@ struct ScrapingResult {
     title: Option<String>,
     links: Vec<Link>,
     headers: Vec<Header>,
+    meta_tags: Vec<MetaTag>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -28,6 +29,12 @@ struct Link {
 struct Header {
     level: u8,
     text: String,
+}
+
+#[derive(Serialize, Deserialize)]
+struct MetaTag {
+    name: String,
+    content: String,
 }
 
 fn prompt_for_url() -> String {
@@ -120,6 +127,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             title: None,
             links: Vec::new(),
             headers: Vec::new(),
+            meta_tags: Vec::new(),
         };
 
         // Get the title
@@ -194,6 +202,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("No headers found");
         }
 
+        // Get the meta elements
+        println!("\nMeta tags found:");
+        let meta_selector = Selector::parse("meta")?;
+        for element in document.select(&meta_selector) {
+            let name = element.value().attr("name")
+                .or(element.value().attr("property"))
+                .or(element.value().attr("http-equiv"));
+
+            if let (Some(name), Some(content)) = (name, element.value().attr("content")) {
+                println!("{}: {}", name, content);
+
+                // Add to out results
+                result.meta_tags.push(MetaTag {
+                    name: name.to_string(),
+                    content: content.to_string(),
+                });
+            }
+        }
+
         // Save the results based on the specific format
         match output_format {
             "json" => save_as_json(&result, &output_path)?,
@@ -239,6 +266,15 @@ fn save_as_text(
     } else {
         for header in &result.headers {
             writeln!(file, "H{}: {}", header.level, header.text)?;
+        }
+    }
+
+    writeln!(file, "\nMeta Tags found:")?;
+    if result.meta_tags.is_empty() {
+        writeln!(file, "No meta tags found")?;
+    } else {
+        for meta_tag in &result.meta_tags {
+            writeln!(file, "{}: {}", meta_tag.name, meta_tag.content)?;
         }
     }
 
@@ -329,6 +365,18 @@ fn save_as_html(
                 "    <li><span class=\"header-tag\">H{}</span>: {}</li>",
                 header.level, header.text
             )?;
+        }
+        writeln!(file, "  </ul>")?;
+    }
+
+    // Meta tags section
+    writeln!(file, "  <h2>Meta Tags Found ({})</h2>", result.meta_tags.len())?;
+    if result.meta_tags.is_empty() {
+        writeln!(file, "  <p>No Meta Tags Found</p>")?;
+    } else {
+        writeln!(file, "  <ul class=\"meta-tags\">")?;
+        for meta_tag in &result.meta_tags {
+            writeln!(file, "    <li><strong>{}</strong>: {}</li>", meta_tag.name, meta_tag.content)?;
         }
         writeln!(file, "  </ul>")?;
     }
