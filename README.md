@@ -4,7 +4,8 @@ A flexible web scraper built in Rust that can extract and save various elements 
 
 ## Features
 
-- Extracts page title, links, and headers
+- Interactive URL prompt when no URL provided via arguments
+- Extracts page title, links, and headers (h1–h6)
 - Saves output in multiple formats (text, JSON, HTML)
 - Command-line arguments for easy customization
 - Delay option to respect rate limits
@@ -13,53 +14,73 @@ A flexible web scraper built in Rust that can extract and save various elements 
 
 ## Installation
 
-Make sure you have Rust and Cargo installed. Then clone this repository and build the project:
+Make sure you have Rust and Cargo installed.
+
+### Global Install
+
+Installs to `~/.cargo/bin/`, making `web_scraper` available from any directory:
+
+```bash
+cargo install --path .
+```
+
+To update after code changes, re-run the same command. To uninstall:
+
+```bash
+cargo uninstall web_scraper
+```
+
+### Local Build
+
+Builds the executable within the project directory:
 
 ```bash
 cargo build --release
 ```
 
-The executable will be available in `target/release/web_scraper`.
+The executable will be available at `target/release/web_scraper`.
 
 ## Usage
+
+Examples below use `web_scraper` (global install). For local builds, substitute with `./target/release/web_scraper`.
 
 ### Basic Usage
 
 ```bash
-# Scrape the default example.com site
-./web_scraper
+# Run without arguments — prompts for URL interactively
+web_scraper
 
-# Scrape a specific site
-./web_scraper <insert_url_address>
+# Pass URL as first argument
+web_scraper <url>
 
 # Or use the --url flag
-./web_scraper --url <insert_url_address>
+web_scraper --url <url>
 ```
 
 ### Output Options
 
 ```bash
 # Save as JSON
-./web_scraper --url <insert_url_address> --format json
+web_scraper --url <url> --format json
 
 # Save as HTML
-./web_scraper --url <insert_url_address> --format html
+web_scraper --url <url> --format html
 
 # Custom output filename
-./web_scraper --url <insert_url_address> --output results
+web_scraper --url <url> --output results
 ```
 
 ### Additional Options
 
 ```bash
 # Add a delay before making the request (in milliseconds)
-./web_scraper --url <insert_url_address> --delay 2000
+web_scraper --url <url> --delay 2000
 ```
 
 ### Full Example
 
 ```bash
-./web_scraper --url <insert_url_address> --format html --output hts_results --delay 1000
+web_scraper --url <url> --format html --output my_results --delay 1000
 ```
 
 ## Output Files

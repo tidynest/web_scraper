@@ -12,22 +12,22 @@ use serde_json::to_string_pretty;
 
 #[derive(Serialize, Deserialize)]
 struct ScrapingResult {
-    url:        String,
-    title:      Option<String>,
-    links:      Vec<Link>,
-    headers:    Vec<Header>,
+    url: String,
+    title: Option<String>,
+    links: Vec<Link>,
+    headers: Vec<Header>,
 }
 
 #[derive(Serialize, Deserialize)]
 struct Link {
-    text:   String,
-    url:    String,
+    text: String,
+    url: String,
 }
 
 #[derive(Serialize, Deserialize)]
 struct Header {
-    level:  u8,
-    text:   String,
+    level: u8,
+    text: String,
 }
 
 fn prompt_for_url() -> String {
@@ -35,7 +35,9 @@ fn prompt_for_url() -> String {
     io::stdout().flush().expect("Failed to flush stdout");
 
     let mut input = String::new();
-    io::stdin().read_line(&mut input).expect("Failed to read input");
+    io::stdin()
+        .read_line(&mut input)
+        .expect("Failed to read input");
 
     let url = input.trim().to_string();
     if url.is_empty() || !url.starts_with("http") {
@@ -51,20 +53,32 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
 
     // Set defaults
-    let mut url             = String::new();
-    let mut output_format   = "text";
-    let mut output_file     = "scraping_results";
-    let mut delay_ms: u64   = 0;
+    let mut url = String::new();
+    let mut output_format = "text";
+    let mut output_file = "scraping_results";
+    let mut delay_ms: u64 = 0;
 
     // Process command line arguments
     let mut i = 1;
     while i < args.len() {
         match args[i].as_str() {
-            "--url"     if i + 1 < args.len() => { url = args[i + 1].clone(); i += 1; },
-            "--format"  if i + 1 < args.len() => { output_format = &args[i + 1]; i += 1; },
-            "--output"  if i + 1 < args.len() => { output_file = &args[i + 1]; i += 1; },
-            "--delay"   if i + 1 < args.len() => { delay_ms = args[i + 1].parse().unwrap_or(0); i += 1; },
-            _           if i == 1 && !args[i].starts_with("--") => url = args[i].clone(),
+            "--url" if i + 1 < args.len() => {
+                url = args[i + 1].clone();
+                i += 1;
+            }
+            "--format" if i + 1 < args.len() => {
+                output_format = &args[i + 1];
+                i += 1;
+            }
+            "--output" if i + 1 < args.len() => {
+                output_file = &args[i + 1];
+                i += 1;
+            }
+            "--delay" if i + 1 < args.len() => {
+                delay_ms = args[i + 1].parse().unwrap_or(0);
+                i += 1;
+            }
+            _ if i == 1 && !args[i].starts_with("--") => url = args[i].clone(),
             _ => {}
         }
         i += 1;
@@ -200,8 +214,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn save_as_text(result: &ScrapingResult, output_path: &str)
-    -> Result<(), Box<dyn std::error::Error>> {
+fn save_as_text(
+    result: &ScrapingResult,
+    output_path: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
     let mut file = File::create(Path::new(output_path))?;
 
     writeln!(file, "Web Scraping Results for: {}\n", result.url)?;
@@ -220,21 +236,29 @@ fn save_as_text(result: &ScrapingResult, output_path: &str)
     writeln!(file, "\nHeaders found:")?;
     if result.headers.is_empty() {
         writeln!(file, "No headers found")?;
+    } else {
+        for header in &result.headers {
+            writeln!(file, "H{}: {}", header.level, header.text)?;
+        }
     }
 
     Ok(())
 }
 
-fn  save_as_json(result: &ScrapingResult, output_path: &str)
-    -> Result<(), Box<dyn std::error::Error>> {
+fn save_as_json(
+    result: &ScrapingResult,
+    output_path: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
     let mut file = File::create(Path::new(output_path))?;
     let json = to_string_pretty(result)?;
     file.write_all(json.as_bytes())?;
     Ok(())
 }
 
-fn save_as_html(result: &ScrapingResult, output_path: &str)
-    -> Result<(), Box<dyn std::error::Error>> {
+fn save_as_html(
+    result: &ScrapingResult,
+    output_path: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
     let mut file = File::create(Path::new(output_path))?;
 
     // Write HTML header
@@ -242,10 +266,16 @@ fn save_as_html(result: &ScrapingResult, output_path: &str)
     writeln!(file, "<html lang=\"en\">")?;
     writeln!(file, "<head>")?;
     writeln!(file, "  <meta charset=\"UTF-8\">")?;
-    writeln!(file, "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")?;
+    writeln!(
+        file,
+        "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+    )?;
     writeln!(file, "  <title>Scraping Results for {}</title>", result.url)?;
     writeln!(file, "  <style>")?;
-    writeln!(file, "    body {{ font-family: Arial, sans-serif; margin: 20px; }}")?;
+    writeln!(
+        file,
+        "    body {{ font-family: Arial, sans-serif; margin: 20px; }}"
+    )?;
     writeln!(file, "    h1 {{ color: #2c3e50; }}")?;
     writeln!(file, "    h2 {{ color: #3498db; margin-top: 30px; }}")?;
     writeln!(file, "    .url {{ color: #7f8c8f; font-style: italic; }}")?;
@@ -253,7 +283,10 @@ fn save_as_html(result: &ScrapingResult, output_path: &str)
     writeln!(file, "    .links li {{ margin-bottom: 5px; }}")?;
     writeln!(file, "    .headers {{ margin-top: 20px; }}")?;
     writeln!(file, "    .headers li {{ margin-bottom: 5px; }}")?;
-    writeln!(file, "    .headers-tag {{ color: #e74c3c; font-weight: bold; }}")?;
+    writeln!(
+        file,
+        "    .headers-tag {{ color: #e74c3c; font-weight: bold; }}"
+    )?;
     writeln!(file, "  </style>")?;
     writeln!(file, "</head>")?;
     writeln!(file, "<body>")?;
@@ -275,7 +308,11 @@ fn save_as_html(result: &ScrapingResult, output_path: &str)
     } else {
         writeln!(file, "  <ul class=\"links\">")?;
         for link in &result.links {
-            writeln!(file, "    <li><a href=\"{}\">{}</a></li>", link.url, link.text)?;
+            writeln!(
+                file,
+                "    <li><a href=\"{}\">{}</a></li>",
+                link.url, link.text
+            )?;
         }
         writeln!(file, "  </ul>")?;
     }
@@ -287,25 +324,24 @@ fn save_as_html(result: &ScrapingResult, output_path: &str)
     } else {
         writeln!(file, "  <ul class=\"headers\">")?;
         for header in &result.headers {
-            writeln!(file, "    <li><span class=\"header-tag\">H{}</span>: {}</li>", header.level, header.text)?;
+            writeln!(
+                file,
+                "    <li><span class=\"header-tag\">H{}</span>: {}</li>",
+                header.level, header.text
+            )?;
         }
         writeln!(file, "  </ul>")?;
     }
 
     // Close HTML tags
     writeln!(file, "  <hr>")?;
-    writeln!(file, "  <p><small>Generated on: {}</small></p>", chrono::Local::now().format("%Y-%m-%d %H:%M:%S"))?;
+    writeln!(
+        file,
+        "  <p><small>Generated on: {}</small></p>",
+        chrono::Local::now().format("%Y-%m-%d %H:%M:%S")
+    )?;
     writeln!(file, "</body>")?;
     writeln!(file, "</html>")?;
 
     Ok(())
 }
-
-
-
-
-
-
-
-
-
