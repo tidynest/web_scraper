@@ -4,7 +4,7 @@ mod models;
 mod output;
 
 use scraper::Html;
-use std::{ fs::File, io::Write, path::Path, time::Duration };
+use std::{fs::File, io::Write, path::Path, time::Duration};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -20,7 +20,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // If we set a delay, wait before making the request
     if config.delay_ms > 0 {
-        println!("Waiting for {} milliseconds before request...", config.delay_ms);
+        println!(
+            "Waiting for {} milliseconds before request...",
+            config.delay_ms
+        );
         tokio::time::sleep(Duration::from_millis(config.delay_ms)).await;
     }
 

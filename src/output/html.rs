@@ -1,10 +1,7 @@
 use crate::models::ScrapingResult;
 use std::{fs::File, io::Write, path::Path};
 
-pub fn save(
-    result: &ScrapingResult,
-    output_path: &str,
-) -> Result<(), Box<dyn std::error::Error>> {
+pub fn save(result: &ScrapingResult, output_path: &str) -> Result<(), Box<dyn std::error::Error>> {
     let mut file = File::create(Path::new(output_path))?;
 
     // Write HTML header
@@ -80,13 +77,21 @@ pub fn save(
     }
 
     // Meta tags section
-    writeln!(file, "  <h2>Meta Tags Found ({})</h2>", result.meta_tags.len())?;
+    writeln!(
+        file,
+        "  <h2>Meta Tags Found ({})</h2>",
+        result.meta_tags.len()
+    )?;
     if result.meta_tags.is_empty() {
         writeln!(file, "  <p>No Meta Tags Found</p>")?;
     } else {
         writeln!(file, "  <ul class=\"meta-tags\">")?;
         for meta_tag in &result.meta_tags {
-            writeln!(file, "    <li><strong>{}</strong>: {}</li>", meta_tag.name, meta_tag.content)?;
+            writeln!(
+                file,
+                "    <li><strong>{}</strong>: {}</li>",
+                meta_tag.name, meta_tag.content
+            )?;
         }
         writeln!(file, "  </ul>")?;
     }

@@ -47,7 +47,12 @@ impl Config {
             url = Self::prompt_for_url();
         }
 
-        Self { url, output_format, output_file, delay_ms }
+        Self {
+            url,
+            output_format,
+            output_file,
+            delay_ms,
+        }
     }
 
     fn prompt_for_url() -> String {
@@ -67,4 +72,3 @@ impl Config {
         url
     }
 }
-

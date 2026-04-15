@@ -1,6 +1,6 @@
-use scraper::{ Html, Selector };
-use std::collections::HashSet;
 use crate::models::*;
+use scraper::{Html, Selector};
+use std::collections::HashSet;
 
 pub fn extract(url: &str, document: &Html) -> Result<ScrapingResult, Box<dyn std::error::Error>> {
     // Track what we've found
@@ -67,7 +67,7 @@ pub fn extract(url: &str, document: &Html) -> Result<ScrapingResult, Box<dyn std
             _ => continue, // Skip any other levels
         };
 
-        let header_selector = Selector::parse(&selector_str)?;
+        let header_selector = Selector::parse(selector_str)?;
         for header in document.select(&header_selector) {
             let header_text = header.text().collect::<String>().trim().to_string();
             header_count += 1;
@@ -88,7 +88,9 @@ pub fn extract(url: &str, document: &Html) -> Result<ScrapingResult, Box<dyn std
     println!("\nMeta tags found:");
     let meta_selector = Selector::parse("meta")?;
     for element in document.select(&meta_selector) {
-        let name = element.value().attr("name")
+        let name = element
+            .value()
+            .attr("name")
             .or(element.value().attr("property"))
             .or(element.value().attr("http-equiv"));
 
