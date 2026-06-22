@@ -1,0 +1,19 @@
+# cargo-deny license policy.
+# Allow-list of SPDX licenses present in the dependency tree (permissive + MPL).
+# Regenerate the set with: cargo deny list
+[licenses]
+allow = [
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-3-Clause",
+    "CC0-1.0",
+    "CDLA-Permissive-2.0",
+    "ISC",
+    "MIT",
+    "MIT-0",
+    "MPL-2.0",
+    "Unicode-3.0",
+    "Unlicense",
+]
+# This workspace crate has no `license` field; don't flag our own code.
+private = { ignore = true }
