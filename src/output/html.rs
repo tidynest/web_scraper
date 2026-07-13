@@ -96,6 +96,27 @@ pub fn save(result: &ScrapingResult, output_path: &str) -> Result<(), Box<dyn st
         writeln!(file, "  </ul>")?;
     }
 
+    // Metrics section
+    let m = &result.metrics;
+    writeln!(file, "  <h2>Metrics</h2>")?;
+    writeln!(file, "  <ul class=\"metrics\">")?;
+    writeln!(
+        file,
+        "    <li><strong>Page Size:</strong> {}</li>",
+        m.size_display()
+    )?;
+    writeln!(
+        file,
+        "    <li><strong>Fetch Time:</strong> {} ms</li>",
+        m.fetch_time_ms
+    )?;
+    writeln!(
+        file,
+        "    <li><strong>Parse Time:</strong> {} ms</li>",
+        m.parse_time_ms
+    )?;
+    writeln!(file, "  </ul>")?;
+
     // Close HTML tags
     writeln!(file, "  <hr>")?;
     writeln!(

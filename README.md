@@ -6,6 +6,7 @@ A flexible web scraper built in Rust that can extract and save various elements 
 
 - Interactive URL prompt when no URL provided via arguments
 - Extracts page title, links, headers (h1–h6), and meta tags (name, OpenGraph, http-equiv)
+- Reports page metrics: content size, fetch time, and parse time
 - Saves output in multiple formats (text, JSON, HTML)
 - Command-line arguments for easy customization
 - Delay option to respect rate limits

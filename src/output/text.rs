@@ -35,5 +35,14 @@ pub fn save(result: &ScrapingResult, output_path: &str) -> Result<(), Box<dyn st
         }
     }
 
+    let m = &result.metrics;
+    writeln!(
+        file,
+        "\nMetrics:\nPage size: {}\nFetch time: {} ms\nParse time: {} ms",
+        m.size_display(),
+        m.fetch_time_ms,
+        m.parse_time_ms
+    )?;
+
     Ok(())
 }

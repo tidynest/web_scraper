@@ -4,7 +4,12 @@ mod models;
 mod output;
 
 use scraper::Html;
-use std::{fs::File, io::Write, path::Path, time::Duration};
+use std::{
+    fs::File,
+    io::Write,
+    path::Path,
+    time::{Duration, Instant},
+};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -32,12 +37,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .timeout(Duration::from_secs(30))
         .build()?;
 
+    let fetch_start = Instant::now();
     let response = client.get(&config.url).send().await?;
 
     if response.status().is_success() {
         let body = response.text().await?;
+        let fetch_time_ms = fetch_start.elapsed().as_millis();
+
+        let parse_start = Instant::now();
         let document = Html::parse_document(&body);
-        let result = extractor::extract(&config.url, &document)?;
+        let mut result = extractor::extract(&config.url, &document)?;
+        result.metrics = models::Metrics {
+            fetch_time_ms,
+            parse_time_ms: parse_start.elapsed().as_millis(),
+            page_size_bytes: body.len(),
+        };
 
         // Save the results based on the specific format
         match config.output_format.as_str() {
