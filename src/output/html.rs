@@ -96,6 +96,22 @@ pub fn save(result: &ScrapingResult, output_path: &str) -> Result<(), Box<dyn st
         writeln!(file, "  </ul>")?;
     }
 
+    // Images section
+    writeln!(file, "  <h2>Images Found ({})</h2>", result.images.len())?;
+    if result.images.is_empty() {
+        writeln!(file, "  <p>No Images Found</p>")?;
+    } else {
+        writeln!(file, "  <ul class=\"images\">")?;
+        for image in &result.images {
+            writeln!(
+                file,
+                "    <li><a href=\"{}\">{}</a> (alt: {})</li>",
+                image.url, image.url, image.alt
+            )?;
+        }
+        writeln!(file, "  </ul>")?;
+    }
+
     // Metrics section
     let m = &result.metrics;
     writeln!(file, "  <h2>Metrics</h2>")?;

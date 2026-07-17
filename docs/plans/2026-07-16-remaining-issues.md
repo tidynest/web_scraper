@@ -116,7 +116,7 @@ JSON needs nothing — serde picks up the new field.
 - [ ] **Step 6: Verify**
 
 ```bash
-cargo build && target/debug/web_scraper --url https://www.rust-lang.org --format json --output /tmp/img_test
+cargo build && cargo run -- --url https://www.rust-lang.org --format json --output /tmp/img_test
 python3 -c "import json; print(json.load(open('/tmp/img_test.json'))['images'][:3])"
 ```
 
@@ -298,8 +298,8 @@ And extend the save `match`:
 
 ```bash
 cargo test && cargo build
-target/debug/web_scraper --url https://example.com --format csv --output /tmp/fmt_test && cat /tmp/fmt_test.csv
-target/debug/web_scraper --url https://example.com --format xml --output /tmp/fmt_test && head -8 /tmp/fmt_test.xml
+cargo run -- --url https://example.com --format csv --output /tmp/fmt_test && cat /tmp/fmt_test.csv
+cargo run -- --url https://example.com --format xml --output /tmp/fmt_test && head -8 /tmp/fmt_test.xml
 python3 -c "import csv; print(list(csv.reader(open('/tmp/fmt_test.csv'))))"  # stdlib parser accepts it = quoting is right
 python3 -c "import xml.dom.minidom as x; x.parse('/tmp/fmt_test.xml'); print('XML OK')"
 ```
@@ -400,7 +400,7 @@ and `filter,` to the final `Self { ... }`.
 
 ```bash
 cargo build
-target/debug/web_scraper --url https://example.com --filter iana --output /tmp/filter_test
+cargo run -- --url https://example.com --filter iana --output /tmp/filter_test
 grep -c '^' /tmp/filter_test.txt   # small file; links section should contain only the iana.org link
 ```
 
@@ -629,13 +629,13 @@ and `depth,` in the final `Self { ... }`.
 
 ```bash
 cargo test && cargo build
-target/debug/web_scraper --url https://example.com --depth 1 --output /tmp/crawl_test
+cargo run -- --url https://example.com --depth 1 --output /tmp/crawl_test
 ```
 
 Expected: 2 pages (example.com links only to www.iana.org — different host, so depth 1 finds 0 same-host links; output says `1 page(s)`). Then a real multi-page check:
 
 ```bash
-target/debug/web_scraper --url https://www.rust-lang.org --depth 1 --delay 500 --format json --output /tmp/crawl_test
+cargo run -- --url https://www.rust-lang.org --depth 1 --delay 500 --format json --output /tmp/crawl_test
 python3 -c "import json; d=json.load(open('/tmp/crawl_test.json')); print(len(d), [p['url'] for p in d[:5]])"
 ```
 
@@ -747,8 +747,8 @@ pub async fn crawl(
 
 ```bash
 cargo test && cargo build
-time target/debug/web_scraper --url https://www.rust-lang.org --depth 1 --concurrency 1 --output /tmp/c1
-time target/debug/web_scraper --url https://www.rust-lang.org --depth 1 --concurrency 8 --output /tmp/c8
+time cargo run -- --url https://www.rust-lang.org --depth 1 --concurrency 1 --output /tmp/c1
+time cargo run -- --url https://www.rust-lang.org --depth 1 --concurrency 8 --output /tmp/c8
 ```
 
 Expected: same page count, `--concurrency 8` wall-clock clearly lower. Extractor `println!`s will interleave between pages — cosmetic, the saved files are ordered.
@@ -850,11 +850,11 @@ and `screenshot,` in `Self { ... }`.
 
 (The `map_err` to `String` happens *inside* the closure because `Box<dyn Error>` isn't `Send` and so can't cross the thread boundary; the double `??` unwraps the JoinError, then the `String` error, which `?` converts back into `Box<dyn Error>` for `main`.)
 
-- [ ] **Step 5: Verify** — Chromium is heavy; run it via `hotrun` per the machine rules:
+- [ ] **Step 5: Verify** — Chromium is heavy; launching via `cargo run` keeps it inside the thermally-capped `buildwork.slice` (child processes inherit the cgroup), satisfying the machine rules without `hotrun`:
 
 ```bash
 cargo build
-hotrun target/debug/web_scraper --url https://example.com --screenshot --output /tmp/shot_test
+cargo run -- --url https://example.com --screenshot --output /tmp/shot_test
 file /tmp/shot_test_1.png
 ```
 

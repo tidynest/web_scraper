@@ -12,6 +12,7 @@ A flexible web scraper built in Rust that can extract and save various elements 
 - Delay option to respect rate limits
 - Timeout handling and error management
 - Duplicate link detection
+- Extract image URLs with alt text
 
 ## Installation
 

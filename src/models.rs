@@ -7,6 +7,7 @@ pub struct ScrapingResult {
     pub links: Vec<Link>,
     pub headers: Vec<Header>,
     pub meta_tags: Vec<MetaTag>,
+    pub images: Vec<Image>,
     pub metrics: Metrics,
 }
 
@@ -26,6 +27,12 @@ pub struct Header {
 pub struct MetaTag {
     pub name: String,
     pub content: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Image {
+    pub url: String,
+    pub alt: String,
 }
 
 #[derive(Serialize, Deserialize, Default)]

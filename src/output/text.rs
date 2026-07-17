@@ -35,6 +35,15 @@ pub fn save(result: &ScrapingResult, output_path: &str) -> Result<(), Box<dyn st
         }
     }
 
+    writeln!(file, "\nImages found:")?;
+    if result.images.is_empty() {
+        writeln!(file, "No images found")?;
+    } else {
+        for image in &result.images {
+            writeln!(file, "{} (alt: {})", image.url, image.alt)?;
+        }
+    }
+
     let m = &result.metrics;
     writeln!(
         file,

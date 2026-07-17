@@ -10,6 +10,7 @@ pub fn extract(url: &str, document: &Html) -> Result<ScrapingResult, Box<dyn std
         links: Vec::new(),
         headers: Vec::new(),
         meta_tags: Vec::new(),
+        images: Vec::new(),
         metrics: Metrics::default(),
     };
 
@@ -50,6 +51,28 @@ pub fn extract(url: &str, document: &Html) -> Result<ScrapingResult, Box<dyn std
                 });
             }
         }
+    }
+
+    // Get all images
+    println!("\nImages found:");
+    let img_selector = Selector::parse("img")?;
+    let mut unique_images = HashSet::new();
+
+    for img in document.select(&img_selector) {
+        if let Some(src) = img.value().attr("src")
+            && unique_images.insert(src.to_string())
+        {
+            let alt = img.value().attr("alt").unwrap_or("").to_string();
+            println!("{} (alt: {})", src, alt);
+            result.images.push(Image {
+                url: src.to_string(),
+                alt,
+            });
+        }
+    }
+
+    if unique_images.is_empty() {
+        println!("No images found");
     }
 
     // Get all headers (h1, h2, h3, etc.)
