@@ -17,11 +17,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Fetching content from: {}", config.url);
 
     // Add file extension based on format
-    let output_path = match config.output_format.as_str() {
-        "json" => format!("{}.json", config.output_file),
-        "html" => format!("{}.html", config.output_file),
-        _ => format!("{}.txt", config.output_file),
+    let ext = match config.output_format.as_str() {
+        "json" | "html" | "csv" | "xml" => config.output_format.as_str(),
+        _ => "txt",
     };
+    let output_path = format!("{}.{}", config.output_file, ext);
 
     // If we set a delay, wait before making the request
     if config.delay_ms > 0 {
@@ -57,6 +57,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         match config.output_format.as_str() {
             "json" => output::json::save(&result, &output_path)?,
             "html" => output::html::save(&result, &output_path)?,
+            "csv" => output::csv::save(&result, &output_path)?,
+            "xml" => output::xml::save(&result, &output_path)?,
             _ => output::text::save(&result, &output_path)?,
         }
 

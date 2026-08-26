@@ -5,14 +5,13 @@ A flexible web scraper built in Rust that can extract and save various elements 
 ## Features
 
 - Interactive URL prompt when no URL provided via arguments
-- Extracts page title, links, headers (h1–h6), and meta tags (name, OpenGraph, http-equiv)
+- Extracts page title, links, headers (h1–h6), meta tags (name, OpenGraph, http-equiv), and image URLs with alt text
 - Reports page metrics: content size, fetch time, and parse time
-- Saves output in multiple formats (text, JSON, HTML)
+- Saves output in multiple formats (text, JSON, HTML, CSV, XML)
 - Command-line arguments for easy customization
 - Delay option to respect rate limits
 - Timeout handling and error management
 - Duplicate link detection
-- Extract image URLs with alt text
 
 ## Installation
 
@@ -92,6 +91,8 @@ The scraper will create one of these files depending on the format:
 - `scraping_results.txt` (default)
 - `scraping_results.json` (with `--format json`)
 - `scraping_results.html` (with `--format html`)
+- `scraping_results.csv` (with `--format csv`)
+- `scraping_results.xml` (with `--format xml`)
 
 You can change the base name with the `--output` option.
 

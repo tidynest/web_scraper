@@ -1,3 +1,4 @@
 /target
 .idea/
 scraping_results.*
+.cgcignore
