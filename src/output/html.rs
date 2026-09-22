@@ -1,7 +1,10 @@
 use crate::models::ScrapingResult;
 use std::{fs::File, io::Write, path::Path};
 
-pub fn save(result: &ScrapingResult, output_path: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub fn save(
+    results: &[ScrapingResult],
+    output_path: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
     let mut file = File::create(Path::new(output_path))?;
 
     // Write HTML header
@@ -13,7 +16,11 @@ pub fn save(result: &ScrapingResult, output_path: &str) -> Result<(), Box<dyn st
         file,
         "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
     )?;
-    writeln!(file, "  <title>Scraping Results for {}</title>", result.url)?;
+    writeln!(
+        file,
+        "  <title>Scraping Results for {}</title>",
+        results.first().map_or("", |result| result.url.as_str())
+    )?;
     writeln!(file, "  <style>")?;
     writeln!(
         file,
@@ -34,6 +41,27 @@ pub fn save(result: &ScrapingResult, output_path: &str) -> Result<(), Box<dyn st
     writeln!(file, "</head>")?;
     writeln!(file, "<body>")?;
 
+    for (i, result) in results.iter().enumerate() {
+        if i > 0 {
+            writeln!(file, "  <hr>")?;
+        }
+        write_page(&mut file, result)?;
+    }
+
+    // Close HTML tags
+    writeln!(file, "  <hr>")?;
+    writeln!(
+        file,
+        "  <p><small>Generated on: {}</small></p>",
+        chrono::Local::now().format("%Y-%m-%d %H:%M:%S")
+    )?;
+    writeln!(file, "</body>")?;
+    writeln!(file, "</html>")?;
+
+    Ok(())
+}
+
+fn write_page(file: &mut File, result: &ScrapingResult) -> Result<(), Box<dyn std::error::Error>> {
     // Page title
     writeln!(file, "  <h1>Web Scraping Results</h1>")?;
     writeln!(file, "  <p class=\"url\">Source: {}</p>", result.url)?;
@@ -132,16 +160,6 @@ pub fn save(result: &ScrapingResult, output_path: &str) -> Result<(), Box<dyn st
         m.parse_time_ms
     )?;
     writeln!(file, "  </ul>")?;
-
-    // Close HTML tags
-    writeln!(file, "  <hr>")?;
-    writeln!(
-        file,
-        "  <p><small>Generated on: {}</small></p>",
-        chrono::Local::now().format("%Y-%m-%d %H:%M:%S")
-    )?;
-    writeln!(file, "</body>")?;
-    writeln!(file, "</html>")?;
 
     Ok(())
 }

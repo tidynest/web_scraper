@@ -404,7 +404,7 @@ cargo run -- --url https://example.com --filter iana --output /tmp/filter_test
 grep -c '^' /tmp/filter_test.txt   # small file; links section should contain only the iana.org link
 ```
 
-- [ ] **Step 6: README + commit** — document `--filter <keyword>` under Additional Options:
+- [x] **Step 6: README + commit** — document `--filter <keyword>` under Additional Options:
 
 ```bash
 cargo fmt && cargo clippy --all-targets
@@ -428,7 +428,7 @@ The big one. Two halves: (a) outputs learn to render `&[ScrapingResult]`, (b) ne
 - Consumes: `extractor::extract`, `Config.delay_ms`, `Config.filter`.
 - Produces: `crawler::crawl(client: &reqwest::Client, start: &str, depth: u32, delay_ms: u64) -> Result<Vec<ScrapingResult>, Box<dyn Error>>`; every `output::*::save` now takes `results: &[ScrapingResult]`. Task 5 rewrites only the inside of `crawl`.
 
-- [ ] **Step 1: Output refactor — signatures.** In all five `src/output/*.rs`, change:
+- [x] **Step 1: Output refactor — signatures.** In all five `src/output/*.rs`, change:
 
 ```rust
 pub fn save(results: &[ScrapingResult], output_path: &str) -> Result<(), Box<dyn std::error::Error>> {
@@ -466,7 +466,7 @@ and call it from `save` in a loop with an `<hr>` between pages:
     }
 ```
 
-- [ ] **Step 2: The crawler** — create `src/crawler.rs`:
+- [x] **Step 2: The crawler** — create `src/crawler.rs`:
 
 ```rust
 use crate::extractor;
@@ -560,7 +560,7 @@ mod tests {
 
 Run: `cargo test scope` — Expected: PASS. (Write the test first if you want the red step: it fails to compile until `in_scope` exists.)
 
-- [ ] **Step 3: Rewire main** — `src/main.rs` becomes:
+- [x] **Step 3: Rewire main** — `src/main.rs` becomes:
 
 ```rust
 mod cli;
@@ -614,7 +614,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 Notes: the pre-request `--delay` sleep and the error-file-on-failure block both move into/are replaced by crawler behaviour (delay before every request; failed pages are skipped with a stderr line, and an all-failed run exits 1). `File`/`Write`/`Path` imports in main.rs go away.
 
-- [ ] **Step 4: CLI flag** — `src/cli.rs`: add `pub depth: u32,` to `Config`, `let mut depth: u32 = 0;` to `parse()`, arm:
+- [x] **Step 4: CLI flag** — `src/cli.rs`: add `pub depth: u32,` to `Config`, `let mut depth: u32 = 0;` to `parse()`, arm:
 
 ```rust
                 "--depth" if i + 1 < args.len() => {
@@ -625,7 +625,7 @@ Notes: the pre-request `--delay` sleep and the error-file-on-failure block both 
 
 and `depth,` in the final `Self { ... }`.
 
-- [ ] **Step 5: Verify**
+- [x] **Step 5: Verify**
 
 ```bash
 cargo test && cargo build

@@ -7,8 +7,8 @@ pub struct Config {
     pub output_file: String,
     pub delay_ms: u64,
     pub filter: Option<String>,
+    pub depth: u32,
 }
-
 impl Config {
     pub fn parse() -> Self {
         let args: Vec<String> = env::args().collect();
@@ -18,6 +18,7 @@ impl Config {
         let mut output_file = String::from("scraping_results");
         let mut delay_ms: u64 = 0;
         let mut filter = None;
+        let mut depth: u32 = 0;
 
         // Process command line arguments
         let mut i = 1;
@@ -43,6 +44,10 @@ impl Config {
                     filter = Some(args[i + 1].clone());
                     i += 1;
                 }
+                "--depth" if i + 1 < args.len() => {
+                    depth = args[i + 1].parse().unwrap_or(0);
+                    i += 1;
+                }
                 _ if i == 1 && !args[i].starts_with("--") => url = args[i].clone(),
                 _ => {}
             }
@@ -59,6 +64,7 @@ impl Config {
             output_file,
             delay_ms,
             filter,
+            depth,
         }
     }
 
