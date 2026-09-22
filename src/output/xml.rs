@@ -62,6 +62,9 @@ pub fn save(
             )?;
         }
         writeln!(file, "  </images>")?;
+        if let Some(path) = &result.screenshot {
+            writeln!(file, r#"  <screenshot path="{}"/>"#, esc(path))?;
+        }
         let m = &result.metrics;
         writeln!(
             file,

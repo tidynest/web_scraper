@@ -9,6 +9,8 @@ pub struct ScrapingResult {
     pub meta_tags: Vec<MetaTag>,
     pub images: Vec<Image>,
     pub metrics: Metrics,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub screenshot: Option<String>,
 }
 impl ScrapingResult {
     /// Keep only entries whose text or URL contains `keyword` (case-insensitive).
@@ -89,6 +91,7 @@ mod tests {
             meta_tags: Vec::new(),
             images: Vec::new(),
             metrics: Metrics::default(),
+            screenshot: None,
         }
     }
 

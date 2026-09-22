@@ -3,6 +3,7 @@ mod crawler;
 mod extractor;
 mod models;
 mod output;
+mod screenshot;
 
 use std::time::Duration;
 
@@ -36,6 +37,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         for result in &mut results {
             result.apply_filter(keyword);
         }
+    }
+
+    if config.screenshot
+        && let Err(e) = screenshot::capture(&mut results, &config.output_file).await
+    {
+        eprintln!("Screenshots skipped: {}", e);
     }
 
     if results.is_empty() {

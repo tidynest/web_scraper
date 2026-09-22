@@ -11,6 +11,7 @@ A flexible web scraper built in Rust that can extract and save various elements 
 - Command-line arguments for easy customisation
 - Crawls same-host links breadth-first to a chosen depth
 - Concurrent fetching within each crawl level, capped by `--concurrency`
+- Optional per-page screenshots via headless Chromium, embedded in the HTML report
 - Delay option between requests to respect rate limits
 - Timeout handling and error management
 - Duplicate link detection
@@ -88,6 +89,9 @@ web_scraper --url <url> --depth 1
 
 # Fetch up to N pages at once per crawl level (default 4); pair with --delay to stay polite
 web_scraper --url <url> --depth 1 --concurrency 8
+
+# Save a screenshot of every crawled page (needs CHROME, see Output Files)
+web_scraper --url <url> --depth 1 --screenshot
 ```
 
 ### Full Example
@@ -109,6 +113,15 @@ The scraper will create one of these files depending on the format:
 You can change the base name with the `--output` option.
 
 Every format holds all crawled pages in one file. JSON output is an array of page objects, one per page, even at depth 0. Pages that fail to load are skipped with a message on stderr, and the run exits with status 1 only if no page loaded.
+
+With `--screenshot`, each crawled page is also saved as a 1920x1080 PNG named `<output>_<n>.png`, next to the results file. Every format records the path, and the HTML report shows a thumbnail that links to the full image. The PNGs come from Chromium's own `--screenshot` flag, so set `CHROME` to a Chromium or headless-shell binary first:
+
+```bash
+export CHROME=~/.cache/ms-playwright/chromium_headless_shell-1237/chrome-headless-shell-linux64/chrome-headless-shell
+
+```
+
+If Chromium can't start, the run prints a warning and still saves the results. A page that fails or takes longer than 30 s gets no screenshot.
 
 ## Note
 

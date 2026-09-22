@@ -9,6 +9,7 @@ pub struct Config {
     pub filter: Option<String>,
     pub depth: u32,
     pub concurrency: usize,
+    pub screenshot: bool,
 }
 impl Config {
     pub fn parse() -> Self {
@@ -21,6 +22,7 @@ impl Config {
         let mut filter = None;
         let mut depth: u32 = 0;
         let mut concurrency: usize = 4;
+        let mut screenshot: bool = false;
 
         // Process command line arguments
         let mut i = 1;
@@ -54,6 +56,9 @@ impl Config {
                     concurrency = args[i + 1].parse().unwrap_or(4);
                     i += 1;
                 }
+                "--screenshot" => {
+                    screenshot = true;
+                }
                 _ if i == 1 && !args[i].starts_with("--") => url = args[i].clone(),
                 _ => {}
             }
@@ -72,6 +77,7 @@ impl Config {
             filter,
             depth,
             concurrency,
+            screenshot,
         }
     }
 

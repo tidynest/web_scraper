@@ -12,6 +12,7 @@ pub fn extract(url: &str, document: &Html) -> Result<ScrapingResult, Box<dyn std
         meta_tags: Vec::new(),
         images: Vec::new(),
         metrics: Metrics::default(),
+        screenshot: None,
     };
 
     // Get the title

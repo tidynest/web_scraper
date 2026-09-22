@@ -37,6 +37,7 @@ pub fn save(
         file,
         "    .headers-tag {{ color: #e74c3c; font-weight: bold; }}"
     )?;
+    writeln!(file, "    .shot {{ border: 1px solid #ccc; }}")?;
     writeln!(file, "  </style>")?;
     writeln!(file, "</head>")?;
     writeln!(file, "<body>")?;
@@ -65,6 +66,19 @@ fn write_page(file: &mut File, result: &ScrapingResult) -> Result<(), Box<dyn st
     // Page title
     writeln!(file, "  <h1>Web Scraping Results</h1>")?;
     writeln!(file, "  <p class=\"url\">Source: {}</p>", result.url)?;
+
+    if let Some(name) = result
+        .screenshot
+        .as_deref()
+        .and_then(|path| Path::new(path).file_name())
+        .and_then(|name| name.to_str())
+    {
+        writeln!(
+            file,
+            "  <a href=\"{0}\"><img class=\"shot\" src=\"{0}\" width=\"320\" loading=\"lazy\" alt=\"Page screenshot\"></a>",
+            name,
+        )?;
+    }
 
     // Page info
     if let Some(title) = &result.title {

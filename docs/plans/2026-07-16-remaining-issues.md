@@ -771,6 +771,8 @@ git push origin main
 
 ### Task 6: Screenshots (issue #7)
 
+> **Superseeded 2026-09-23.** Not built as written: `headless_chrome` failed the cargo deny gate (its build dependency `auto_generate_cdp` is GPL-3.0-or-later). Shipped instead as `src/screenshot.rs`, which runs `$CHROME --headless --screenshot` per page through `tokio::process`, with no new dependency. Screenshot paths are stored on `ScrapingResult` and rendered by every output format. The steps below are kept for history.
+
 Optional `--screenshot` flag: after scraping, drive headless Chromium over every scraped URL and save PNGs. Only task with a new dependency.
 
 **Files:**

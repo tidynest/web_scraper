@@ -34,6 +34,9 @@ pub fn save(
         writeln!(file, "metric,fetch_time_ms,{}", m.fetch_time_ms)?;
         writeln!(file, "metric,parse_time_ms,{}", m.parse_time_ms)?;
         writeln!(file, "metric,page_size_bytes,{}", m.page_size_bytes)?;
+        if let Some(path) = &result.screenshot {
+            writeln!(file, "screenshot,{}", esc(path))?;
+        }
     }
     Ok(())
 }

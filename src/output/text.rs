@@ -48,6 +48,10 @@ pub fn save(
             }
         }
 
+        if let Some(path) = &result.screenshot {
+            writeln!(file, "\nScreenshot: {}", path)?;
+        }
+
         let m = &result.metrics;
         writeln!(
             file,
