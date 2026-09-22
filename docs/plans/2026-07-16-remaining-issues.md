@@ -30,7 +30,7 @@
 **Interfaces:**
 - Produces: `models::Image { url: String, alt: String }`, `ScrapingResult.images: Vec<Image>` — Tasks 2–4 render/filter this field.
 
-- [ ] **Step 1: Add the model** — `src/models.rs`, after `MetaTag`:
+- [x] **Step 1: Add the model** — `src/models.rs`, after `MetaTag`:
 
 ```rust
 #[derive(Serialize, Deserialize)]
@@ -46,13 +46,13 @@ And inside `ScrapingResult`, after `pub meta_tags: Vec<MetaTag>,`:
     pub images: Vec<Image>,
 ```
 
-- [ ] **Step 2: Initialise it** — `src/extractor.rs`, in the `ScrapingResult { ... }` literal add:
+- [x] **Step 2: Initialise it** — `src/extractor.rs`, in the `ScrapingResult { ... }` literal add:
 
 ```rust
         images: Vec::new(),
 ```
 
-- [ ] **Step 3: Extract images** — `src/extractor.rs`, after the links loop (after the `for (i, link)` block ends, ~line 52):
+- [x] **Step 3: Extract images** — `src/extractor.rs`, after the links loop (after the `for (i, link)` block ends, ~line 52):
 
 ```rust
     // Get all images
@@ -78,7 +78,7 @@ And inside `ScrapingResult`, after `pub meta_tags: Vec<MetaTag>,`:
     }
 ```
 
-- [ ] **Step 4: Render in text** — `src/output/text.rs`, after the meta-tags block, before the metrics block:
+- [x] **Step 4: Render in text** — `src/output/text.rs`, after the meta-tags block, before the metrics block:
 
 ```rust
     writeln!(file, "\nImages found:")?;
@@ -91,7 +91,7 @@ And inside `ScrapingResult`, after `pub meta_tags: Vec<MetaTag>,`:
     }
 ```
 
-- [ ] **Step 5: Render in HTML** — `src/output/html.rs`, after the meta-tags section, before the Metrics section:
+- [x] **Step 5: Render in HTML** — `src/output/html.rs`, after the meta-tags section, before the Metrics section:
 
 ```rust
     // Images section
@@ -113,7 +113,7 @@ And inside `ScrapingResult`, after `pub meta_tags: Vec<MetaTag>,`:
 
 JSON needs nothing — serde picks up the new field.
 
-- [ ] **Step 6: Verify**
+- [x] **Step 6: Verify**
 
 ```bash
 cargo build && cargo run -- --url https://www.rust-lang.org --format json --output /tmp/img_test
