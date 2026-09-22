@@ -755,7 +755,7 @@ Expected: same page count, `--concurrency 8` wall-clock clearly lower. Extractor
 
 Gotcha to know, not to fix: `scraper::Html` is not `Send`, so it must never be held across an `.await`. `fetch_page` already parses *after* its last await — that's why the spawned future stays `Send`. If you reorder it and the compiler screams about `Send`, that's what happened.
 
-- [ ] **Step 5: README + commit** — document `--concurrency N` (default 4; combine with `--delay` for politeness):
+- [x] **Step 5: README + commit** — document `--concurrency N` (default 4; combine with `--delay` for politeness):
 
 ```bash
 cargo fmt && cargo clippy --all-targets
