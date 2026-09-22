@@ -10,7 +10,7 @@ A flexible web scraper built in Rust that can extract and save various elements 
 - Saves output in multiple formats (text, JSON, HTML, CSV, XML)
 - Command-line arguments for easy customisation
 - Crawls same-host links breadth-first to a chosen depth
-- Concurrent fetching within each crawl level, capped by --concurrency
+- Concurrent fetching within each crawl level, capped by `--concurrency`
 - Delay option between requests to respect rate limits
 - Timeout handling and error management
 - Duplicate link detection
