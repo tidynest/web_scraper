@@ -23,7 +23,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .timeout(Duration::from_secs(30))
         .build()?;
 
-    let mut results = crawler::crawl(&client, &config.url, config.depth, config.delay_ms).await?;
+    let mut results = crawler::crawl(
+        &client,
+        &config.url,
+        config.depth,
+        config.delay_ms,
+        config.concurrency,
+    )
+    .await?;
 
     if let Some(keyword) = &config.filter {
         for result in &mut results {

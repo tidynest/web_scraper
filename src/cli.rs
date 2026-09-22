@@ -8,6 +8,7 @@ pub struct Config {
     pub delay_ms: u64,
     pub filter: Option<String>,
     pub depth: u32,
+    pub concurrency: usize,
 }
 impl Config {
     pub fn parse() -> Self {
@@ -19,6 +20,7 @@ impl Config {
         let mut delay_ms: u64 = 0;
         let mut filter = None;
         let mut depth: u32 = 0;
+        let mut concurrency: usize = 4;
 
         // Process command line arguments
         let mut i = 1;
@@ -48,6 +50,10 @@ impl Config {
                     depth = args[i + 1].parse().unwrap_or(0);
                     i += 1;
                 }
+                "--concurrency" if i + 1 < args.len() => {
+                    concurrency = args[i + 1].parse().unwrap_or(4);
+                    i += 1;
+                }
                 _ if i == 1 && !args[i].starts_with("--") => url = args[i].clone(),
                 _ => {}
             }
@@ -65,6 +71,7 @@ impl Config {
             delay_ms,
             filter,
             depth,
+            concurrency,
         }
     }
 

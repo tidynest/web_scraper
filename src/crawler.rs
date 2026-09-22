@@ -3,7 +3,9 @@ use crate::models::{Metrics, ScrapingResult};
 use reqwest::{Client, Url};
 use scraper::Html;
 use std::collections::HashSet;
+use std::sync::Arc;
 use std::time::{Duration, Instant};
+use tokio::{sync::Semaphore, task::JoinSet};
 
 /// Only follow http(s) links on the same host as the starting URL.
 fn in_scope(start: &Url, candidate: &Url) -> bool {
@@ -36,25 +38,36 @@ pub async fn crawl(
     start: &str,
     depth: u32,
     delay_ms: u64,
+    concurrency: usize,
 ) -> Result<Vec<ScrapingResult>, Box<dyn std::error::Error>> {
     let start_url = Url::parse(start)?;
     let mut visited = HashSet::from([start_url.to_string()]);
     let mut frontier = vec![start_url.clone()];
     let mut results = Vec::new();
+    let semaphore = Arc::new(Semaphore::new(concurrency));
 
     for level in 0..=depth {
-        let mut next = Vec::new();
+        let mut tasks = JoinSet::new();
         for url in frontier.drain(..) {
-            if delay_ms > 0 {
-                tokio::time::sleep(Duration::from_millis(delay_ms)).await;
-            }
-            println!("\n[depth {}] Fetching {}", level, url);
-            let Some(result) = fetch_page(client, &url).await else {
-                continue;
-            };
+            let client = client.clone(); // reqwest::Client is an Arc internally, cheap to clone
+            let semaphore = semaphore.clone();
+            tasks.spawn(async move {
+                let _permit = semaphore.acquire_owned().await.ok()?;
+                if delay_ms > 0 {
+                    tokio::time::sleep(Duration::from_millis(delay_ms)).await;
+                }
+                println!("\n[depth {}] Fetching {}", level, url);
+                fetch_page(&client, &url).await
+            });
+        }
+
+        let mut next = Vec::new();
+        while let Some(joined) = tasks.join_next().await {
+            let Ok(Some(result)) = joined else { continue };
             if level < depth {
+                let base = Url::parse(&result.url)?;
                 for link in &result.links {
-                    if let Ok(mut abs) = url.join(&link.url) {
+                    if let Ok(mut abs) = base.join(&link.url) {
                         abs.set_fragment(None); // #section variants are the same page
                         if in_scope(&start_url, &abs) && visited.insert(abs.to_string()) {
                             next.push(abs);

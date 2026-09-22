@@ -641,7 +641,7 @@ python3 -c "import json; d=json.load(open('/tmp/crawl_test.json')); print(len(d)
 
 Expected: >1 pages, all on www.rust-lang.org. Keep `--delay 500` — politeness.
 
-- [ ] **Step 6: README + commit** — document `--depth N` (same-host, breadth-first, 0 = single page) and the JSON-array format change:
+- [x] **Step 6: README + commit** — document `--depth N` (same-host, breadth-first, 0 = single page) and the JSON-array format change:
 
 ```bash
 cargo fmt && cargo clippy --all-targets
@@ -667,7 +667,7 @@ Upgrade the crawler's per-level loop: fetch every URL in a depth level concurren
 - Consumes: `fetch_page`, `in_scope` from Task 4 (unchanged).
 - Produces: `crawl(client, start, depth, delay_ms, concurrency: usize)` — one added parameter; `Config.concurrency: usize` (default 4).
 
-- [ ] **Step 1: CLI flag** — `src/cli.rs`: add `pub concurrency: usize,` to `Config`, `let mut concurrency: usize = 4;`, arm:
+- [x] **Step 1: CLI flag** — `src/cli.rs`: add `pub concurrency: usize,` to `Config`, `let mut concurrency: usize = 4;`, arm:
 
 ```rust
                 "--concurrency" if i + 1 < args.len() => {
@@ -678,7 +678,7 @@ Upgrade the crawler's per-level loop: fetch every URL in a depth level concurren
 
 and `concurrency,` in `Self { ... }`.
 
-- [ ] **Step 2: Concurrent level loop** — `src/crawler.rs`: add imports and replace `crawl`:
+- [x] **Step 2: Concurrent level loop** — `src/crawler.rs`: add imports and replace `crawl`:
 
 ```rust
 use std::sync::Arc;
@@ -736,14 +736,14 @@ pub async fn crawl(
 }
 ```
 
-- [ ] **Step 3: Pass it through** — `src/main.rs`, update the call:
+- [x] **Step 3: Pass it through** — `src/main.rs`, update the call:
 
 ```rust
     let mut results =
         crawler::crawl(&client, &config.url, config.depth, config.delay_ms, config.concurrency).await?;
 ```
 
-- [ ] **Step 4: Verify**
+- [x] **Step 4: Verify**
 
 ```bash
 cargo test && cargo build
