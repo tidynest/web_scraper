@@ -1,13 +1,7 @@
+use super::markup_esc as esc;
 use crate::models::ScrapingResult;
-use std::{fs::File, io::Write, path::Path};
 
-// Order matters: Escape & first or you double-escape the others
-fn esc(s: &str) -> String {
-    s.replace('&', "&amp;")
-        .replace('<', "&lt;")
-        .replace('>', "&gt;")
-        .replace('"', "&quot;")
-}
+use std::{fs::File, io::Write, path::Path};
 
 pub fn save(
     results: &[ScrapingResult],
@@ -75,14 +69,4 @@ pub fn save(
     }
     writeln!(file, "</scraping_results>")?;
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::esc;
-
-    #[test]
-    fn escapes_xml_special_chars() {
-        assert_eq!(esc(r#"a & <b> "c""#), "a &amp; &lt;b&gt; &quot;c&quot;");
-    }
 }

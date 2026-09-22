@@ -1,3 +1,4 @@
+use super::{markup_esc as esc, safe_url};
 use crate::models::ScrapingResult;
 use std::{fs::File, io::Write, path::Path};
 
@@ -19,7 +20,7 @@ pub fn save(
     writeln!(
         file,
         "  <title>Scraping Results for {}</title>",
-        results.first().map_or("", |result| result.url.as_str())
+        esc(results.first().map_or("", |result| result.url.as_str()))
     )?;
     writeln!(file, "  <style>")?;
     writeln!(
@@ -65,7 +66,7 @@ pub fn save(
 fn write_page(file: &mut File, result: &ScrapingResult) -> Result<(), Box<dyn std::error::Error>> {
     // Page title
     writeln!(file, "  <h1>Web Scraping Results</h1>")?;
-    writeln!(file, "  <p class=\"url\">Source: {}</p>", result.url)?;
+    writeln!(file, "  <p class=\"url\">Source: {}</p>", esc(&result.url))?;
 
     if let Some(name) = result
         .screenshot
@@ -75,15 +76,15 @@ fn write_page(file: &mut File, result: &ScrapingResult) -> Result<(), Box<dyn st
     {
         writeln!(
             file,
-            "  <a href=\"{0}\"><img class=\"shot\" src=\"{0}\" width=\"320\" loading=\"lazy\" alt=\"Page screenshot\"></a>",
-            name,
+            "  <a href=\"./{0}\"><img class=\"shot\" src=\"./{0}\" width=\"320\" loading=\"lazy\" alt=\"Page screenshot\"></a>",
+            esc(name),
         )?;
     }
 
     // Page info
     if let Some(title) = &result.title {
         writeln!(file, "  <h2>Page Title</h2>")?;
-        writeln!(file, "  <p>{}</p>", title)?;
+        writeln!(file, "  <p>{}</p>", esc(title))?;
     }
 
     // Links section
@@ -93,11 +94,7 @@ fn write_page(file: &mut File, result: &ScrapingResult) -> Result<(), Box<dyn st
     } else {
         writeln!(file, "  <ul class=\"links\">")?;
         for link in &result.links {
-            writeln!(
-                file,
-                "    <li><a href=\"{}\">{}</a></li>",
-                link.url, link.text
-            )?;
+            writeln!(file, "    <li>{}</li>", anchor(&link.url, &link.text),)?;
         }
         writeln!(file, "  </ul>")?;
     }
@@ -112,7 +109,8 @@ fn write_page(file: &mut File, result: &ScrapingResult) -> Result<(), Box<dyn st
             writeln!(
                 file,
                 "    <li><span class=\"header-tag\">H{}</span>: {}</li>",
-                header.level, header.text
+                header.level,
+                esc(&header.text),
             )?;
         }
         writeln!(file, "  </ul>")?;
@@ -132,7 +130,8 @@ fn write_page(file: &mut File, result: &ScrapingResult) -> Result<(), Box<dyn st
             writeln!(
                 file,
                 "    <li><strong>{}</strong>: {}</li>",
-                meta_tag.name, meta_tag.content
+                esc(&meta_tag.name),
+                esc(&meta_tag.content),
             )?;
         }
         writeln!(file, "  </ul>")?;
@@ -147,8 +146,9 @@ fn write_page(file: &mut File, result: &ScrapingResult) -> Result<(), Box<dyn st
         for image in &result.images {
             writeln!(
                 file,
-                "    <li><a href=\"{}\">{}</a> (alt: {})</li>",
-                image.url, image.url, image.alt
+                "    <li>{} (alt: {})</li>",
+                anchor(&image.url, &image.url),
+                esc(&image.alt),
             )?;
         }
         writeln!(file, "  </ul>")?;
@@ -176,4 +176,12 @@ fn write_page(file: &mut File, result: &ScrapingResult) -> Result<(), Box<dyn st
     writeln!(file, "  </ul>")?;
 
     Ok(())
+}
+
+/// A link for http(s) URLs; any other scheme is shown as text, with the URL on hover.
+fn anchor(url: &str, text: &str) -> String {
+    match safe_url(url) {
+        Some(url) => format!("<a href=\"{}\">{}</a>", esc(url), esc(text)),
+        None => format!("<span title=\"{}\">{}</span>", esc(url), esc(text)),
+    }
 }
