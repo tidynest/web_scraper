@@ -122,7 +122,7 @@ python3 -c "import json; print(json.load(open('/tmp/img_test.json'))['images'][:
 
 Expected: a non-empty list of `{url, alt}` objects.
 
-- [ ] **Step 7: README + commit** — add `- Extracts image URLs with alt text` to the features list, then:
+- [x] **Step 7: README + commit** — add `- Extracts image URLs with alt text` to the features list, then:
 
 ```bash
 cargo fmt && cargo clippy --all-targets
@@ -144,7 +144,7 @@ git push origin main
 - Consumes: full `ScrapingResult` including `images` (Task 1) and `metrics`.
 - Produces: `output::csv::save(&ScrapingResult, &str)`, `output::xml::save(&ScrapingResult, &str)` — same signature as the existing three.
 
-- [ ] **Step 1: Write failing escape tests** — bottom of the new `src/output/csv.rs` (create the file with just this for now):
+- [x] **Step 1: Write failing escape tests** — bottom of the new `src/output/csv.rs` (create the file with just this for now):
 
 ```rust
 #[cfg(test)]
@@ -160,7 +160,7 @@ mod tests {
 
 Run: `cargo test` — Expected: FAIL (`esc` not found).
 
-- [ ] **Step 2: Implement CSV** — `src/output/csv.rs`, above the tests:
+- [x] **Step 2: Implement CSV** — `src/output/csv.rs`, above the tests:
 
 ```rust
 use crate::models::ScrapingResult;
@@ -200,7 +200,7 @@ pub fn save(result: &ScrapingResult, output_path: &str) -> Result<(), Box<dyn st
 
 Run: `cargo test` — Expected: PASS.
 
-- [ ] **Step 3: Implement XML** — create `src/output/xml.rs`:
+- [x] **Step 3: Implement XML** — create `src/output/xml.rs`:
 
 ```rust
 use crate::models::ScrapingResult;
@@ -262,7 +262,7 @@ mod tests {
 }
 ```
 
-- [ ] **Step 4: Register formats** — `src/output/mod.rs`:
+- [x] **Step 4: Register formats** — `src/output/mod.rs`:
 
 ```rust
 pub mod csv;
@@ -294,7 +294,7 @@ And extend the save `match`:
         }
 ```
 
-- [ ] **Step 5: Verify**
+- [x] **Step 5: Verify**
 
 ```bash
 cargo test && cargo build
@@ -304,7 +304,7 @@ python3 -c "import csv; print(list(csv.reader(open('/tmp/fmt_test.csv'))))"  # s
 python3 -c "import xml.dom.minidom as x; x.parse('/tmp/fmt_test.xml'); print('XML OK')"
 ```
 
-- [ ] **Step 6: README + commit** — update `- Saves output in multiple formats (text, JSON, HTML, CSV, XML)` and the Output Files list, then:
+- [x] **Step 6: README + commit** — update `- Saves output in multiple formats (text, JSON, HTML, CSV, XML)` and the Output Files list, then:
 
 ```bash
 cargo fmt && cargo clippy --all-targets
@@ -324,7 +324,7 @@ git push origin main
 **Interfaces:**
 - Produces: `Config.filter: Option<String>`, `ScrapingResult::apply_filter(&mut self, keyword: &str)`.
 
-- [ ] **Step 1: Failing test** — bottom of `src/models.rs`:
+- [x] **Step 1: Failing test** — bottom of `src/models.rs`:
 
 ```rust
 #[cfg(test)]
@@ -359,7 +359,7 @@ mod tests {
 
 Run: `cargo test filter` — Expected: FAIL (`apply_filter` not found).
 
-- [ ] **Step 2: Implement** — `src/models.rs`, in (or as) the `impl ScrapingResult` block:
+- [x] **Step 2: Implement** — `src/models.rs`, in (or as) the `impl ScrapingResult` block:
 
 ```rust
 impl ScrapingResult {
@@ -377,7 +377,7 @@ impl ScrapingResult {
 
 Run: `cargo test filter` — Expected: PASS.
 
-- [ ] **Step 3: CLI flag** — `src/cli.rs`: add `pub filter: Option<String>,` to `Config`, `let mut filter = None;` to `parse()`, this arm to the `match`:
+- [x] **Step 3: CLI flag** — `src/cli.rs`: add `pub filter: Option<String>,` to `Config`, `let mut filter = None;` to `parse()`, this arm to the `match`:
 
 ```rust
                 "--filter" if i + 1 < args.len() => {
@@ -388,7 +388,7 @@ Run: `cargo test filter` — Expected: PASS.
 
 and `filter,` to the final `Self { ... }`.
 
-- [ ] **Step 4: Wire it** — `src/main.rs`, right after the `result.metrics = ...` assignment:
+- [x] **Step 4: Wire it** — `src/main.rs`, right after the `result.metrics = ...` assignment:
 
 ```rust
         if let Some(keyword) = &config.filter {
@@ -396,7 +396,7 @@ and `filter,` to the final `Self { ... }`.
         }
 ```
 
-- [ ] **Step 5: Verify**
+- [x] **Step 5: Verify**
 
 ```bash
 cargo build

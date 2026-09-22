@@ -8,7 +8,7 @@ A flexible web scraper built in Rust that can extract and save various elements 
 - Extracts page title, links, headers (h1–h6), meta tags (name, OpenGraph, http-equiv), and image URLs with alt text
 - Reports page metrics: content size, fetch time, and parse time
 - Saves output in multiple formats (text, JSON, HTML, CSV, XML)
-- Command-line arguments for easy customization
+- Command-line arguments for easy customisation
 - Delay option to respect rate limits
 - Timeout handling and error management
 - Duplicate link detection
@@ -77,6 +77,9 @@ web_scraper --url <url> --output results
 ```bash
 # Add a delay before making the request (in milliseconds)
 web_scraper --url <url> --delay 2000
+
+# Filter results by keyword
+web_scraper --url <url> --filter <keyword>
 ```
 
 ### Full Example

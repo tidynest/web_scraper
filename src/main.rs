@@ -52,6 +52,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             parse_time_ms: parse_start.elapsed().as_millis(),
             page_size_bytes: body.len(),
         };
+        if let Some(keyword) = &config.filter {
+            result.apply_filter(keyword);
+        }
 
         // Save the results based on the specific format
         match config.output_format.as_str() {
