@@ -783,7 +783,7 @@ Optional `--screenshot` flag: after scraping, drive headless Chromium over every
 - Consumes: `results` (for the URL list), `config.output_file` (PNG base name).
 - Produces: `screenshot::capture(urls: &[String], output_base: &str) -> Result<(), Box<dyn Error>>` — blocking, call via `spawn_blocking`.
 
-- [ ] **Step 1: Dependency + license gate** — `Cargo.toml`:
+- [x] *Superseded by `src/screenshot.rs`.* **Step 1: Dependency + license gate** — `Cargo.toml`:
 
 ```toml
 headless_chrome = "1"
@@ -791,7 +791,7 @@ headless_chrome = "1"
 
 Run **immediately**: `cargo deny check` — Expected: `licenses ok`. If a transitive license fails the allow-list, stop and extend `deny.toml` deliberately (one-line `allow` entry with a comment) before writing any code.
 
-- [ ] **Step 2: Browser binary — no system install.** This machine has no system Chrome (and the rule is: don't install one). Point the crate at Playwright's bundled Chromium via the `CHROME` env var, which `headless_chrome` respects for auto-detection… verify the path exists first:
+- [x] *Superseded by `src/screenshot.rs`.* **Step 2: Browser binary — no system install.** This machine has no system Chrome (and the rule is: don't install one). Point the crate at Playwright's bundled Chromium via the `CHROME` env var, which `headless_chrome` respects for auto-detection… verify the path exists first:
 
 ```bash
 ls ~/.cache/ms-playwright/chromium-*/chrome-linux/chrome
@@ -800,7 +800,7 @@ export CHROME=$(ls -d ~/.cache/ms-playwright/chromium-*/chrome-linux/chrome | ta
 
 If the glob is empty, find the binary with `find ~/.cache/ms-playwright -name chrome -o -name headless_shell` and export that. Put the working `export` in your shell profile if you'll use `--screenshot` often; document it in README regardless.
 
-- [ ] **Step 3: The module** — create `src/screenshot.rs`:
+- [x] *Superseded by `src/screenshot.rs`.* **Step 3: The module** — create `src/screenshot.rs`:
 
 ```rust
 use headless_chrome::protocol::cdp::Page::CaptureScreenshotFormatOption;
@@ -829,7 +829,7 @@ pub fn capture(urls: &[String], output_base: &str) -> Result<(), Box<dyn std::er
 
 Sequential on purpose — one browser, one tab at a time. Chromium is the heavy part, not our loop.
 
-- [ ] **Step 4: Flag + wiring** — `src/cli.rs`: add `pub screenshot: bool,`, `let mut screenshot = false;`, arm (note: no `i += 1`, it takes no value):
+- [x] *Superseded by `src/screenshot.rs`.* **Step 4: Flag + wiring** — `src/cli.rs`: add `pub screenshot: bool,`, `let mut screenshot = false;`, arm (note: no `i += 1`, it takes no value):
 
 ```rust
                 "--screenshot" => screenshot = true,
@@ -852,7 +852,7 @@ and `screenshot,` in `Self { ... }`.
 
 (The `map_err` to `String` happens *inside* the closure because `Box<dyn Error>` isn't `Send` and so can't cross the thread boundary; the double `??` unwraps the JoinError, then the `String` error, which `?` converts back into `Box<dyn Error>` for `main`.)
 
-- [ ] **Step 5: Verify** — Chromium is heavy; launching via `cargo run` keeps it inside the thermally-capped `buildwork.slice` (child processes inherit the cgroup), satisfying the machine rules without `hotrun`:
+- [x] *Superseded by `src/screenshot.rs`.* **Step 5: Verify** — Chromium is heavy; launching via `cargo run` keeps it inside the thermally-capped `buildwork.slice` (child processes inherit the cgroup), satisfying the machine rules without `hotrun`:
 
 ```bash
 cargo build
@@ -862,7 +862,7 @@ file /tmp/shot_test_1.png
 
 Expected: `PNG image data, 1920 x 1080` (or similar). Also verify graceful failure: `unset CHROME` in a subshell and confirm you get the "Screenshot capture failed" message, not a panic.
 
-- [ ] **Step 6: README + commit** — document `--screenshot`, the `CHROME` env var requirement, and that PNGs are named `<output>_<n>.png`:
+- [x] *Superseded by `src/screenshot.rs`.* **Step 6: README + commit** — document `--screenshot`, the `CHROME` env var requirement, and that PNGs are named `<output>_<n>.png`:
 
 ```bash
 cargo fmt && cargo clippy --all-targets
